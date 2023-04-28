@@ -1,14 +1,17 @@
+# Created by Chris Hindefjord / chris.hindefjord.se
+# 2023-04
 #
+# Licensed under MIT License (see LICENSE file for more information)
 #
 #  Usage : ./subdecode.py input.sub [> output]
+VERSION      =    'v0.1a'
+VERSION_DATE =    '230426'
+
 
 import os
 import re
 import sys
 import math
-
-VERSION = 'v0.1a'
-VERSION_DATE = '230426'
 
 settings = dict(filename = "", output_to_file = False, output_file = "", mode = 0, add_time_end = False, debug = False)
 signals = []
