@@ -13,7 +13,20 @@ import re
 import sys
 import math
 
-settings = dict(filename = "", output_to_file = False, output_file = "", mode = 0, add_time_end = False, debug = False)
+settings = dict(
+    filename       = "",
+
+    output_to_file = False,
+    output_file    = "",
+
+    mode           = 0,
+    add_time_end   = False,
+
+    start_limit    = -1,
+    stop_limit     = -1,
+
+    debug          = False
+)
 signals = []
 #data_len = 0
 
@@ -37,13 +50,16 @@ def printHelp():
   "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but \"timed\"\n"
   "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
   "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n"
+  "  -b=X,    --begin=X\t\tStart processing at X microseconds (μs)\n"
+  "    \t\t\t\t (exported timestamps will still be from the beginning of the data)\n"
+  "  -e=X,    --end=X\t\tStop processing at X μs\n"
   "  -o FILE, --output FILE\tOutput data to FILE instead of STDOUT")
-  exit()
 
 def readArgs():
   global settings
   first = True
   is_output_file = False
+  do_exit = -1
 
   for arg in sys.argv:
     if first:
@@ -57,6 +73,10 @@ def readArgs():
         settings['mode'] = 2
       elif arg == '-cs' or arg == '--csv-add-end':
         settings['add_time_end'] = True
+      elif arg.startswith('-b=') or arg.startswith('--begin='):
+        settings['start_limit'] = int(arg.split("=")[1])
+      elif arg.startswith('-e=') or arg.startswith('--end='):
+        settings['stop_limit'] = int(arg.split("=")[1])
       elif arg == '-o' or arg == '--output':
         settings['output_to_file'] = True
         is_output_file = True
@@ -64,12 +84,13 @@ def readArgs():
         settings['debug'] = True
       elif arg == '-h' or arg == '--help':
         printHelp()
+        do_exit = 0
       elif arg == '-V' or arg == '--version':
         print("SubDecode", VERSION, "(" + VERSION_DATE + ")")
-        exit()
+        do_exit = 0
       else:
         print("Unknown argument:", arg, "(Try '" + sys.argv[0] + " -h' for information on how to use the script)")
-        exit(1)
+        do_exit = 1
 
     else:
       if is_output_file:
@@ -77,6 +98,9 @@ def readArgs():
         is_output_file = False
       else:
         settings['filename'] = arg
+
+  if do_exit >= 0:
+    exit(do_exit)
 
   if settings['output_to_file'] and settings['output_file'] == '':
     print("No output filename given! Exiting!")
