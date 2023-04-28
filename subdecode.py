@@ -161,9 +161,23 @@ def output(str):
 
 def outputCSV():
   csv = ""
+  
+  total_time = 0
 
   for s in signals:
+    total_time += s[0]
+    
+    if total_time < settings['start_limit']:
+      total_time += abs(s[1])
+      continue
+
     csv += str(s[0]) + "," + str(s[1]) + "\n"
+    
+    total_time += abs(s[1])
+
+    if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
+      deb("Stoped at", total_time)
+      break
   
   csv = csv.strip()
 
@@ -176,14 +190,27 @@ def outputTimedCSV():
 
   for s in signals:
     total_time += s[0]
+
+    if total_time < settings['start_limit']:
+      total_time += abs(s[1])
+      continue
+
     if settings['add_time_end']:
       csv += str(total_time - 1) + ",0\n"
     csv += str(total_time) + ",1\n"
+    
+    if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
+      deb("Stoped at", total_time)
+      break
 
     total_time += abs(s[1])
     if settings['add_time_end']:
       csv += str(total_time - 1) + ",1\n"
     csv += str(total_time) + ",0\n"
+
+    if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
+      deb("Stoped at", total_time)
+      break
   
   csv = csv.strip()
 
