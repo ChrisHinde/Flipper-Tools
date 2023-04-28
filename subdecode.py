@@ -31,8 +31,8 @@ def printHelp():
   "  -h       --help\t\tShow this text\n"
   "  -V,      --version\t\tShow the version of the script\n"
   "  -D,      --debug\t\tRun the script in debug mode\n"
-  "    \t\t\t\t Outputs debug information to the console/STDOUT\n"
-  "    \t\t\t\t (does not affect file output)\n"
+  "    \t\t\t\t Outputs debug information to the console/STDOUT \n"
+  "    \t\t\t\t (including some statistics) (NOTE: does not affect file output)\n"
   "  -c,      --csv\t\tExport the data as CSV (Comma seperated values)\n"
   "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but \"timed\"\n"
   "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
@@ -155,7 +155,6 @@ def outputTimedCSV():
     if settings['add_time_end']:
       csv += str(total_time - 1) + ",0\n"
     csv += str(total_time) + ",1\n"
-      
 
     total_time += abs(s[1])
     if settings['add_time_end']:
