@@ -163,6 +163,7 @@ def outputCSV():
   csv = ""
   
   total_time = 0
+  total_signals = 0
 
   for s in signals:
     total_time += s[0]
@@ -174,10 +175,14 @@ def outputCSV():
     csv += str(s[0]) + "," + str(s[1]) + "\n"
     
     total_time += abs(s[1])
+    
+    total_signals += 1
 
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
       deb("Stoped at", total_time)
       break
+  
+  deb("Exported signal pairs:", total_signals)
   
   csv = csv.strip()
 
@@ -187,6 +192,7 @@ def outputTimedCSV():
   csv = ""
 
   total_time = 0
+  total_signals = 0
 
   for s in signals:
     total_time += s[0]
@@ -199,6 +205,8 @@ def outputTimedCSV():
       csv += str(total_time - 1) + ",0\n"
     csv += str(total_time) + ",1\n"
     
+    total_signals += 1
+    
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
       deb("Stoped at", total_time)
       break
@@ -207,12 +215,16 @@ def outputTimedCSV():
     if settings['add_time_end']:
       csv += str(total_time - 1) + ",1\n"
     csv += str(total_time) + ",0\n"
+    
+    total_signals += 1
 
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
       deb("Stoped at", total_time)
       break
   
   csv = csv.strip()
+  
+  deb("Exported signalz:", total_signals)
 
   output(csv)
 
