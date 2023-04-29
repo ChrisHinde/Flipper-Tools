@@ -4,14 +4,20 @@
 # Licensed under MIT License (see LICENSE file for more information)
 #
 #  Usage : ./subdecode.py input.sub [> output]
-VERSION      =    'v0.1a'
-VERSION_DATE =    '230426'
-
+VERSION      =    'v0.2a'
+VERSION_DATE =    '230429'
 
 import os
 import re
 import sys
 import math
+
+# Check Python version before continuing
+if sys.version_info.major < 3:
+  import platform
+  
+  print("Python version (" + platform.python_version() + ") is too old! Please use Python3!")
+  exit(30)
 
 settings = dict(
     filename       = "",
@@ -30,13 +36,12 @@ settings = dict(
 signals = []
 #data_len = 0
 
+from helpers import *
+
 shortest_tone = dict(tone = 10000000, silence = 0)
 longest_tone = dict(tone = 0, silence = 0)
 shortest_silence = dict(tone = 0, silence = -100000000)
 longest_silence = dict(tone = 0, silence = 0)
-
-def deb(*arg):
-  print(*arg) if settings['debug'] else None
 
 def printHelp():
   print("Usage:", sys.argv[0], "[ARGS] input_file\n"
@@ -82,6 +87,7 @@ def readArgs():
         is_output_file = True
       elif arg == '-D' or arg == '--debug':
         settings['debug'] = True
+        enable_debug(True)
       elif arg == '-h' or arg == '--help':
         printHelp()
         do_exit = 0
@@ -228,7 +234,7 @@ def outputTimedCSV():
   
   csv = csv.strip()
   
-  deb("Exported signalz:", total_signals)
+  deb("Exported signals:", total_signals)
 
   output(csv)
 
