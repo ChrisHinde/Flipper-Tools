@@ -151,6 +151,10 @@ def readFile():
 
           signals.append((tone, silence))
 
+  if len(signals) == 0:
+    print("No RAW data found! Exiting!")
+    exit(4)
+
 def output(str):
   if settings['output_to_file']:
     with open(settings['output_file'], 'w') as f:
@@ -179,7 +183,7 @@ def outputCSV():
     total_signals += 1
 
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
-      deb("Stoped at", total_time)
+      deb("Stopped at", total_time)
       break
   
   deb("Exported signal pairs:", total_signals)
@@ -219,7 +223,7 @@ def outputTimedCSV():
     total_signals += 1
 
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
-      deb("Stoped at", total_time)
+      deb("Stopped at", total_time)
       break
   
   csv = csv.strip()
