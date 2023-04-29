@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Created by Chris Hindefjord / chris.hindefjord.se
 # 2023-04
 #
@@ -191,9 +193,9 @@ def outputCSV():
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
       deb("Stopped at", total_time)
       break
-  
+
   deb("Exported signal pairs:", total_signals)
-  
+
   csv = csv.strip()
 
   output(csv)
@@ -212,8 +214,8 @@ def outputTimedCSV():
       continue
 
     if settings['add_time_end']:
-      csv += str(total_time - 1) + ",0\n"
-    csv += str(total_time) + ",1\n"
+      csv += str(total_time - 1) + ",1\n"
+    csv += str(total_time) + ",0\n"
     
     total_signals += 1
     
@@ -223,8 +225,8 @@ def outputTimedCSV():
 
     total_time += abs(s[1])
     if settings['add_time_end']:
-      csv += str(total_time - 1) + ",1\n"
-    csv += str(total_time) + ",0\n"
+      csv += str(total_time - 1) + ",0\n"
+    csv += str(total_time) + ",1\n"
     
     total_signals += 1
 
@@ -234,7 +236,7 @@ def outputTimedCSV():
   
   csv = csv.strip()
   
-  deb("Exported signals:", total_signals)
+  deb("Exported timed signals:", total_signals)
 
   output(csv)
 
