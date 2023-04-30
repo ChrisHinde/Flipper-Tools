@@ -1,3 +1,6 @@
+if __name__ == '__main__':
+  print("This isn't a runnable script! Please run ´subdecode.py´ instead!")
+  exit(1)
 
 settings = dict(
     filename       = "",
@@ -13,5 +16,7 @@ settings = dict(
 
     format_output  = True,
 
-    debug          = False
+    debug          = False,
+
+    silence_avg_ratio = 1.5
 )

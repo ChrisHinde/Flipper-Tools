@@ -24,6 +24,7 @@ if sys.version_info.major < 3:
 signals = []
 
 from lib.config import settings
+from lib.decoders import *
 from lib.helpers import *
 
 shortest_tone = dict(tone = 10000000, silence = 0)
@@ -228,7 +229,6 @@ def decode():
   tone_total        = 0
   silence_total     = 0
   silence_avg       = 0
-  silence_avg_ratio = 1.5
   count             = 0
   sigs              = []
   values            = []
@@ -275,20 +275,7 @@ def decode():
 
   silence_avg = silence_total / count
 
-  time = 0
-  for sig in sigs:
-    tone    = sig[0]
-    silence = sig[1]
-    time += tone
-
-    if silence > silence_avg * silence_avg_ratio:
-      values.append(("-", time))
-    elif tone < silence:
-      values.append((0, time))
-    else:
-      values.append((1, time))
-
-    time += silence
+  values = decoder_1(sigs, silence_avg)
 
   c = 1
   bin_tmp = ''
