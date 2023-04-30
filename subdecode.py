@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Created by Chris Hindefjord / chris.hindefjord.se
