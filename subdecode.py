@@ -72,6 +72,8 @@ def readArgs():
         settings['start_limit'] = int(arg.split("=")[1])
       elif arg.startswith('-e=') or arg.startswith('--end='):
         settings['stop_limit'] = int(arg.split("=")[1])
+      elif arg.startswith('-d=') or arg.startswith('--decode-method='):
+        settings['decode_method'] = int(arg.split("=")[1])
       elif arg == '-f' or arg == '--no-format':
         settings['format_output'] = False
       elif arg == '-o' or arg == '--output':
@@ -275,7 +277,10 @@ def decode():
 
   silence_avg = silence_total / count
 
-  values = decoder_1(sigs, silence_avg)
+  if settings['decode_method'] == 0:
+    values = decoder_0(sigs, silence_avg)
+  elif settings['decode_method'] == 1:
+    values = decoder_1(sigs, silence_avg)
 
   c = 1
   bin_tmp = ''

@@ -3,20 +3,26 @@ if __name__ == '__main__':
   exit(1)
 
 settings = dict(
-    filename       = "",
+  filename          = "",
 
-    output_to_file = False,
-    output_file    = "",
+  output_to_file    = False,
+  output_file       = "",
 
-    mode           = 0,
-    add_time_end   = False,
+  mode              = 0,
+  add_time_end      = False,
 
-    start_limit    = -1,
-    stop_limit     = -1,
+  auto_detect       = False,
 
-    format_output  = True,
+  start_limit       = -1,
+  stop_limit        = -1,
 
-    debug          = False,
+  format_output     = True,
 
-    silence_avg_ratio = 1.5
+  decode_method     = 1,
+
+  silence_avg_ratio = 1.5,
+  tone_length       = 500,
+  silence_length    = 1000,
+
+  debug             = False,
 )
