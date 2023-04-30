@@ -6,8 +6,8 @@
 # Licensed under MIT License (see LICENSE file for more information)
 #
 #  Usage : ./subdecode.py input.sub [> output]
-VERSION      =    'v0.2a'
-VERSION_DATE =    '230429'
+VERSION      =    'v0.3a'
+VERSION_DATE =    '230430'
 
 import os
 import re
