@@ -7,7 +7,7 @@
 # Licensed under MIT License (see LICENSE file for more information)
 #
 #  Usage : ./subdecode.py input.sub [> output]
-VERSION      =    'v0.3a'
+VERSION      =    'v0.4a'
 VERSION_DATE =    '230430'
 
 import os
@@ -33,7 +33,7 @@ shortest_silence = dict(tone = 0, silence = -100000000)
 longest_silence = dict(tone = 0, silence = 0)
 
 def printHelp():
-  print("Usage:", sys.argv[0], "[ARGS] input_file\n"
+  print("Usage:", sys.argv[0], "INPUT_FILE [ARGS]\n"
   "Arguments:\n"
   "  -h       --help\t\tShow this text\n"
   "  -V,      --version\t\tShow the version of the script\n"
