@@ -1,3 +1,7 @@
+if __name__ == '__main__':
+  print("This isn't a runnable script! Please run ´subdecode.py´ instead!")
+  exit(1)
+
 debug_enabled = False
 format_output = True
 
