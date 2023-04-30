@@ -13,7 +13,6 @@ VERSION_DATE =    '230430'
 import os
 import re
 import sys
-import math
 
 # Check Python version before continuing
 if sys.version_info.major < 3:
@@ -22,24 +21,9 @@ if sys.version_info.major < 3:
   print("Python version (" + platform.python_version() + ") is too old! Please use Python3!")
   exit(30)
 
-settings = dict(
-    filename       = "",
-
-    output_to_file = False,
-    output_file    = "",
-
-    mode           = 0,
-    add_time_end   = False,
-
-    start_limit    = -1,
-    stop_limit     = -1,
-
-    format_output  = True,
-
-    debug          = False
-)
 signals = []
 
+from lib.config import settings
 from lib.helpers import *
 
 shortest_tone = dict(tone = 10000000, silence = 0)
@@ -89,13 +73,11 @@ def readArgs():
         settings['stop_limit'] = int(arg.split("=")[1])
       elif arg == '-f' or arg == '--no-format':
         settings['format_output'] = False
-        enable_format_output(False)
       elif arg == '-o' or arg == '--output':
         settings['output_to_file'] = True
         is_output_file = True
       elif arg == '-D' or arg == '--debug':
         settings['debug'] = True
-        enable_debug(True)
       elif arg == '-h' or arg == '--help':
         printHelp()
         do_exit = 0
