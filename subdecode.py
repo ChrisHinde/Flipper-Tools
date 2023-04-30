@@ -44,12 +44,12 @@ def printHelp():
   "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but with \"running time\"\n"
   "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
   "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n"
-  "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the decoded output\n"
-  "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n"
   "  -b=X,    --begin=X\t\tStart processing at X microseconds (μs)\n"
   "    \t\t\t\t (exported timestamps will still be from the beginning of the data)\n"
   "  -e=X,    --end=X\t\tStop processing at X μs\n"
-  "  -f,      --no-format\t\tDont't format the decode output\n"
+  "  -f,      --no-format\t\tDont't format the decoded output\n"
+  "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the (formated) decoded output\n"
+  "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n"
   "  -o FILE, --output FILE\tOutput data to FILE instead of STDOUT")
 
 def readArgs():
