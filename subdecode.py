@@ -290,8 +290,6 @@ def decode():
 
     time += silence
 
-  deb("") # Add a line break to make the output more readable in "Debug mode"
-
   c = 1
   bin_tmp = ''
   bin_out = ''
@@ -338,7 +336,6 @@ def decode():
     hex_out += decode_format("-")
     dec_out += decode_format("-")
     incomplete += 1
-
 
   out = "Bin: " + bin_out + "\n" + \
         "Hex: " + hex_out + "\n" + \
