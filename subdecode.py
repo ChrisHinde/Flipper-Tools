@@ -227,19 +227,21 @@ def outputTimedCSV():
   output(csv)
 
 def decode():
-  total_time        = 0
-  tone_total        = 0
-  silence_total     = 0
-  silence_avg       = 0
-  count             = 0
-  sigs              = []
-  values            = []
+  total_time    = 0
+  tone_total    = 0
+  silence_total = 0
+  silence_avg   = 0
+  count         = 0
+  sigs          = []
+  values        = []
 
   sh_tone = dict(tone = 10000000, silence = 0)
   lon_tone = dict(tone = 0, silence = 0)
   sh_silence = dict(tone = 0, silence = 100000000)
   lon_silence = dict(tone = 0, silence = 0)
 
+  # First, go through the signals, make them all posetive, collect statistics
+  #  and, if set, limit them to the selected range
   for sig in signals:
     tone    = sig[0]
     silence = abs(sig[1])
@@ -277,6 +279,7 @@ def decode():
 
   silence_avg = silence_total / count
 
+  # Run the signals through the selected decoding
   if settings['decode_method'] == 0:
     values = decoder_0(sigs, silence_avg)
   elif settings['decode_method'] == 1:
@@ -290,6 +293,7 @@ def decode():
   sum = 0
   incomplete = 0
 
+  # Output the decoded signals in a human-friendly format
   for v in values:
     if v[0] == '-':
       if c == 1:
@@ -310,6 +314,8 @@ def decode():
     #sum += v[0] * 2**(8-c)
     bin_tmp += str(v[0])
 
+    # If we have collected enough bits to make up a byte
+    #  add it to the output (as binary, hexadecimal, and decimal)
     if c == 8:
       sum = int(bin_tmp.zfill(8), 2)
       bin_out += bin_tmp + " "
@@ -322,6 +328,8 @@ def decode():
     else:
       c += 1
 
+  # If the values ended before a whole byte was collected
+  #  output the incomplete binary, but skip converting to hex and decimal
   if bin_tmp != '':
     sum = int(bin_tmp, 2)
     bin_out += bin_tmp + " "
@@ -333,6 +341,7 @@ def decode():
         "Hex: " + hex_out + "\n" + \
         "Dec: " + dec_out + "\n"
 
+  # Output statistics
   deb("Decode Information:")
   deb(" Signal count:", count)
   deb(" Shortest tone:", sh_tone)
