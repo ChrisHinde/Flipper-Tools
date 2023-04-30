@@ -21,6 +21,8 @@ settings = dict(
   decode_method     = 1,
 
   output_timestamps = False,
+  output_flags      = 'bhd',
+  align_width       = 8,
 
   silence_avg_ratio = 1.5,
   tone_length       = 500,

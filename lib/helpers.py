@@ -12,11 +12,12 @@ def decode_format(out, zfill=0, hex=False):
     out = f'{out:x}'
 
   if settings['format_output']:
-    return str(out).zfill(zfill).center(8)
+    return str(out).zfill(zfill).center(settings['align_width'])
   elif hex:
     return out.zfill(zfill)
   else:
     return str(out)
+
 def decode_newline(time = None):
   if settings['format_output']:
     if settings['output_timestamps'] and time != None:
@@ -32,4 +33,4 @@ def output(str):
       f.write(str)
     print("Data vas exported to", settings['output_file'])
   else:
-    print(str)
+    print(str.strip())

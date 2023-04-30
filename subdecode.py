@@ -39,17 +39,22 @@ def printHelp():
   "  -V,      --version\t\tShow the version of the script\n"
   "  -D,      --debug\t\tRun the script in debug/verbose mode\n"
   "    \t\t\t\t Outputs debug information to the console/STDOUT \n"
-  "    \t\t\t\t (including some statistics) (NOTE: does not affect file output)\n"
-  "  -c,      --csv\t\tExport the data as CSV (Comma seperated values)\n"
-  "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but with \"running time\"\n"
-  "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
-  "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n"
+  "    \t\t\t\t (including some statistics) (NOTE: does not affect file output)\n\n"
   "  -b=X,    --begin=X\t\tStart processing at X microseconds (μs)\n"
   "    \t\t\t\t (exported timestamps will still be from the beginning of the data)\n"
-  "  -e=X,    --end=X\t\tStop processing at X μs\n"
+  "  -e=X,    --end=X\t\tStop processing at X μs\n\n"
+
+  "  -c,      --csv\t\tExport the data as CSV (Comma seperated values), don't decode\n"
+  "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but with \"running time\"\n"
+  "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
+  "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n\n"
+
+  "  -x=Y,    --output-conv=Y\tConvert the values to 'Y': binary (b), hexadecimal (h) and/or decimal/numeric (d)\n"
+  "    \t\t\t\t Default: bhd\n"
   "  -f,      --no-format\t\tDont't format the decoded output\n"
   "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the (formated) decoded output\n"
-  "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n"
+  "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n\n"
+
   "  -o FILE, --output FILE\tOutput data to FILE instead of STDOUT")
 
 def readArgs():
@@ -76,6 +81,8 @@ def readArgs():
         settings['stop_limit'] = int(arg.split("=")[1])
       elif arg.startswith('-d=') or arg.startswith('--decode-method='):
         settings['decode_method'] = int(arg.split("=")[1])
+      elif arg.startswith('-x=') or arg.startswith('--output-conv='):
+        settings['output_flags'] = arg.split("=")[1].lower()
       elif arg == '-f' or arg == '--no-format':
         settings['format_output'] = False
       elif arg == '-t' or arg == '--output-timestamps':
@@ -108,6 +115,10 @@ def readArgs():
   if settings['output_to_file'] and settings['output_file'] == '':
     print("No output filename given! Exiting!")
     exit(4)
+
+  # Change the width for center alignment depending on the 'biggest' format (bin/hex/dec) selected for output
+  if 'b' not in settings['output_flags']:
+    settings['align_width'] = 3 if 'd' in settings['output_flags'] else 2
 
 def readFile():
   global signals, shortest_tone, longest_tone, shortest_silence, longest_silence
@@ -344,9 +355,9 @@ def decode():
       dec_out += decode_format("-")
       incomplete += 1
 
-    out = "Bin:" + bin_out + "\n\n" + \
-          "Hex:" + hex_out + "\n\n" + \
-          "Dec:" + dec_out + "\n"
+    out = ("Bin:" + bin_out.rstrip() + "\n\n" if 'b' in settings['output_flags'] else "") + \
+          ("Hex:" + hex_out.rstrip() + "\n\n" if 'h' in settings['output_flags'] else "") + \
+          ("Dec:" + dec_out.rstrip() + "\n"   if 'd' in settings['output_flags'] else "")
 
   # Output statistics
   deb("Decode Information:")
