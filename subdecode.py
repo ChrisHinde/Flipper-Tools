@@ -39,7 +39,7 @@ settings = dict(
 )
 signals = []
 
-from helpers import *
+from lib.helpers import *
 
 shortest_tone = dict(tone = 10000000, silence = 0)
 longest_tone = dict(tone = 0, silence = 0)
