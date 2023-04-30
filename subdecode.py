@@ -149,31 +149,23 @@ def readFile():
     print("No RAW data found! Exiting!")
     exit(4)
 
-def output(str):
-  if settings['output_to_file']:
-    with open(settings['output_file'], 'w') as f:
-      f.write(str)
-    print("Data vas exported to", settings['output_file'])
-  else:
-    print(str)
-
 def outputCSV():
   csv = ""
-  
+
   total_time = 0
   total_signals = 0
 
   for s in signals:
     total_time += s[0]
-    
+
     if total_time < settings['start_limit']:
       total_time += abs(s[1])
       continue
 
     csv += str(s[0]) + "," + str(s[1]) + "\n"
-    
+
     total_time += abs(s[1])
-    
+
     total_signals += 1
 
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):

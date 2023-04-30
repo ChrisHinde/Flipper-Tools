@@ -19,3 +19,11 @@ def decode_format(out, zfill=0, hex=False):
     return str(out)
 def decode_newline():
   return "\n     " if settings['format_output'] else " "
+
+def output(str):
+  if settings['output_to_file']:
+    with open(settings['output_file'], 'w') as f:
+      f.write(str)
+    print("Data vas exported to", settings['output_file'])
+  else:
+    print(str)
