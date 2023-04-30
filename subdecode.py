@@ -33,6 +33,8 @@ settings = dict(
     start_limit    = -1,
     stop_limit     = -1,
 
+    format_output  = True,
+
     debug          = False
 )
 signals = []
@@ -50,7 +52,7 @@ def printHelp():
   "Arguments:\n"
   "  -h       --help\t\tShow this text\n"
   "  -V,      --version\t\tShow the version of the script\n"
-  "  -D,      --debug\t\tRun the script in debug mode\n"
+  "  -D,      --debug\t\tRun the script in debug/verbose mode\n"
   "    \t\t\t\t Outputs debug information to the console/STDOUT \n"
   "    \t\t\t\t (including some statistics) (NOTE: does not affect file output)\n"
   "  -c,      --csv\t\tExport the data as CSV (Comma seperated values)\n"
@@ -60,6 +62,7 @@ def printHelp():
   "  -b=X,    --begin=X\t\tStart processing at X microseconds (μs)\n"
   "    \t\t\t\t (exported timestamps will still be from the beginning of the data)\n"
   "  -e=X,    --end=X\t\tStop processing at X μs\n"
+  "  -f,      --no-format\tDont't format the decode output\n"
   "  -o FILE, --output FILE\tOutput data to FILE instead of STDOUT")
 
 def readArgs():
@@ -84,6 +87,9 @@ def readArgs():
         settings['start_limit'] = int(arg.split("=")[1])
       elif arg.startswith('-e=') or arg.startswith('--end='):
         settings['stop_limit'] = int(arg.split("=")[1])
+      elif arg == '-f' or arg == '--no-format':
+        settings['format_output'] = False
+        enable_format_output(False)
       elif arg == '-o' or arg == '--output':
         settings['output_to_file'] = True
         is_output_file = True
@@ -241,23 +247,161 @@ def outputTimedCSV():
   output(csv)
 
 def decode():
+  total_time        = 0
+  tone_total        = 0
+  silence_total     = 0
+  silence_avg       = 0
+  silence_avg_ratio = 1.5
+  count             = 0
+  sigs              = []
+  values            = []
+
+  sh_tone = dict(tone = 10000000, silence = 0)
+  lon_tone = dict(tone = 0, silence = 0)
+  sh_silence = dict(tone = 0, silence = 100000000)
+  lon_silence = dict(tone = 0, silence = 0)
 
   for sig in signals:
-    print(sig)
+    tone    = sig[0]
+    silence = abs(sig[1])
+
+    total_time += tone
+    
+    if total_time < settings['start_limit']:
+      total_time += silence
+      continue
+      
+    total_time += silence
+
+    tone_total    += tone
+    silence_total += silence
+    count         += 1
+
+    if (tone < sh_tone['tone']):
+      sh_tone['tone'] = tone
+      sh_tone['silence'] = silence
+    elif (tone > lon_tone['tone']):
+      lon_tone['tone'] = tone
+      lon_tone['silence'] = silence
+    if (silence < sh_silence['silence']):
+      sh_silence['tone'] = tone
+      sh_silence['silence'] = silence
+    elif (silence > lon_silence['silence']):
+      lon_silence['tone'] = tone
+      lon_silence['silence'] = silence
+
+    sigs.append((tone, silence))
+    
+    if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
+      deb("Stopped at", total_time)
+      break
+
+  silence_avg = silence_total / count
+
+  time = 0
+  for sig in sigs:
+    tone    = sig[0]
+    silence = sig[1]
+    time += tone
+
+    #deb(tone, silence)
+    if silence > silence_avg * silence_avg_ratio:
+      values.append(("-", time))
+    elif tone < silence:
+      values.append((0, time))
+    else:
+      values.append((1, time))
+
+    time += silence
+
+  deb("") # Add a line broak to make the output more readable in "Debug mode"
+
+  c = 1
+  bin_tmp = ''
+  bin_out = ''
+  hex_out = ''
+  dec_out = ''
+  sum = 0
+  incomplete = 0
+
+  for v in values:
+    if v[0] == '-':
+      if c == 1:
+        continue
+
+      sum = int(bin_tmp, 2) if bin_tmp != '' else 0
+      bin_out += bin_tmp
+      #hex_out += f'{sum:x}'.zfill(2).center(8) + " "
+      #dec_out += str(sum).zfill(3).center(8) + " "
+      hex_out += decode_format("-") + decode_newline()
+      dec_out += decode_format("-") + decode_newline()
+      bin_out += decode_newline()
+      #hex_out += "\n     "
+      #dec_out += "\n     "
+
+      bin_tmp = ""
+      sum = 0
+      c = 1
+      incomplete += 1
+      continue
+
+    #sum += v[0] * 2**(8-c)
+    bin_tmp += str(v[0])
+
+    if c == 8:
+      sum = int(bin_tmp.zfill(8), 2)
+      bin_out += bin_tmp + " "
+      hex_out += decode_format(sum, 2, True) + " "
+      dec_out += decode_format(sum, 3) + " "
+
+      bin_tmp = ""
+      sum = 0
+      c = 1
+    else:
+      c += 1
+
+  if bin_tmp != '':
+    sum = int(bin_tmp, 2)
+    bin_out += bin_tmp + " "
+    hex_out += decode_format("-")  #f'{sum:x}'.zfill(2).center(8)
+    dec_out += decode_format("-")  #str(sum).zfill(3).center(8)
+    incomplete += 1
+
+
+  out = "Bin: " + bin_out + "\n" + \
+        "Hex: " + hex_out + "\n" + \
+        "Dec: " + dec_out + "\n"
+
+  deb("Decode Information:")
+  deb(" Signal count:", count)
+  deb(" Shortest tone:", sh_tone)
+  deb(" Longest tone:", lon_tone)
+  deb(" Shortest silence:", sh_silence)
+  deb(" Longest silence:", lon_silence)
+  deb(" Tone average:", tone_total / count)
+  deb(" Silence average:", silence_avg)
+  deb(" Incomplete bytes:", incomplete)
+  deb("")
+
+  output(out)
+
 
 # - - - - - MAIN - - - - - - -
 
 readArgs()
 
-deb("DEBUG MODE ENABLED!")
+deb("DEBUG MODE ENABLED!\n")
 
 readFile()
 
-deb("Total signal pairs:", len(signals))
-deb("Shortest tone:", shortest_tone)
-deb("Longest tone:", longest_tone)
-deb("Shortest silence:", shortest_silence)
-deb("Longest silence:", longest_silence)
+deb("")
+deb("Ingest information:")
+deb(" Total signal pairs:", len(signals))
+deb(" Shortest tone:", shortest_tone)
+deb(" Longest tone:", longest_tone)
+deb(" Shortest silence:", shortest_silence)
+deb(" Longest silence:", longest_silence)
+deb("")
 
 
 if settings['mode'] == 0:
