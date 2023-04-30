@@ -38,7 +38,6 @@ settings = dict(
     debug          = False
 )
 signals = []
-#data_len = 0
 
 from helpers import *
 
@@ -140,16 +139,11 @@ def readFile():
         count = len(parts)
         if (count % 2):
           count -= 1
-          #data_len = int(parts[count])
 
         for n in range(0, count, 2):
           tone = int(parts[n])
           silence = int(parts[n+1])
 
-          #shortest_tone
-          # = min(shortest_tone
-          #['tone'], tone)
-          #longest_tone = max(longest_tone['tone'], tone)
           if (tone < shortest_tone['tone']):
             shortest_tone['tone'] = tone
             shortest_tone['silence'] = silence
@@ -304,7 +298,6 @@ def decode():
     silence = sig[1]
     time += tone
 
-    #deb(tone, silence)
     if silence > silence_avg * silence_avg_ratio:
       values.append(("-", time))
     elif tone < silence:
@@ -314,7 +307,7 @@ def decode():
 
     time += silence
 
-  deb("") # Add a line broak to make the output more readable in "Debug mode"
+  deb("") # Add a line break to make the output more readable in "Debug mode"
 
   c = 1
   bin_tmp = ''
@@ -331,13 +324,9 @@ def decode():
 
       sum = int(bin_tmp, 2) if bin_tmp != '' else 0
       bin_out += bin_tmp
-      #hex_out += f'{sum:x}'.zfill(2).center(8) + " "
-      #dec_out += str(sum).zfill(3).center(8) + " "
       hex_out += decode_format("-") + decode_newline()
       dec_out += decode_format("-") + decode_newline()
       bin_out += decode_newline()
-      #hex_out += "\n     "
-      #dec_out += "\n     "
 
       bin_tmp = ""
       sum = 0
@@ -363,8 +352,8 @@ def decode():
   if bin_tmp != '':
     sum = int(bin_tmp, 2)
     bin_out += bin_tmp + " "
-    hex_out += decode_format("-")  #f'{sum:x}'.zfill(2).center(8)
-    dec_out += decode_format("-")  #str(sum).zfill(3).center(8)
+    hex_out += decode_format("-")
+    dec_out += decode_format("-")
     incomplete += 1
 
 
