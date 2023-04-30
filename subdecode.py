@@ -41,13 +41,15 @@ def printHelp():
   "    \t\t\t\t Outputs debug information to the console/STDOUT \n"
   "    \t\t\t\t (including some statistics) (NOTE: does not affect file output)\n"
   "  -c,      --csv\t\tExport the data as CSV (Comma seperated values)\n"
-  "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but \"timed\"\n"
+  "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but with \"running time\"\n"
   "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
   "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n"
+  "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the decoded output\n"
+  "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n"
   "  -b=X,    --begin=X\t\tStart processing at X microseconds (μs)\n"
   "    \t\t\t\t (exported timestamps will still be from the beginning of the data)\n"
   "  -e=X,    --end=X\t\tStop processing at X μs\n"
-  "  -f,      --no-format\tDont't format the decode output\n"
+  "  -f,      --no-format\t\tDont't format the decode output\n"
   "  -o FILE, --output FILE\tOutput data to FILE instead of STDOUT")
 
 def readArgs():
@@ -76,6 +78,8 @@ def readArgs():
         settings['decode_method'] = int(arg.split("=")[1])
       elif arg == '-f' or arg == '--no-format':
         settings['format_output'] = False
+      elif arg == '-t' or arg == '--output-timestamps':
+        settings['output_timestamps'] = True
       elif arg == '-o' or arg == '--output':
         settings['output_to_file'] = True
         is_output_file = True
@@ -194,9 +198,9 @@ def outputTimedCSV():
     if settings['add_time_end']:
       csv += str(total_time - 1) + ",1\n"
     csv += str(total_time) + ",0\n"
-    
+
     total_signals += 1
-    
+
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
       deb("Stoped at", total_time)
       break
@@ -211,9 +215,9 @@ def outputTimedCSV():
     if (settings['stop_limit'] > 0) and (settings['stop_limit'] <= total_time):
       deb("Stopped at", total_time)
       break
-  
+
   csv = csv.strip()
-  
+
   deb("Exported timed signals:", total_signals)
 
   output(csv)
@@ -239,11 +243,11 @@ def decode():
     silence = abs(sig[1])
 
     total_time += tone
-    
+
     if total_time < settings['start_limit']:
       total_time += silence
       continue
-      
+
     total_time += silence
 
     tone_total    += tone
@@ -269,69 +273,80 @@ def decode():
       deb("Stopped at", total_time)
       break
 
+  settings['total_time'] = total_time
+  if settings['output_timestamps']:
+    settings['time_pad'] = len(str(total_time))
+
   silence_avg = silence_total / count
+  incomplete = 0
+  out = ""
 
   # Run the signals through the selected decoding
   if settings['decode_method'] == 0:
     values = decoder_0(sigs, silence_avg)
   elif settings['decode_method'] == 1:
     values = decoder_1(sigs, silence_avg)
+  else:
+    print("Unknown decode method:", settings['decode_method'])
 
-  c = 1
-  bin_tmp = ''
-  bin_out = ''
-  hex_out = ''
-  dec_out = ''
-  sum = 0
-  incomplete = 0
+  if len(values) == 0:
+    print("No values to output!")
+    deb("")
+  else:
+    c = 1
+    bin_tmp = ''
+    bin_out = decode_newline(values[0][1])
+    hex_out = decode_newline(values[0][1])
+    dec_out = decode_newline(values[0][1])
+    sum = 0
 
-  # Output the decoded signals in a human-friendly format
-  for v in values:
-    if v[0] == '-':
-      if c == 1:
+    # Output the decoded signals in a human-friendly format
+    for v in values:
+      if v[0] == '-':
+        if c == 1:
+          continue
+
+        sum = int(bin_tmp, 2) if bin_tmp != '' else 0
+        bin_out += bin_tmp
+        hex_out += decode_format("-") + decode_newline(v[1])
+        dec_out += decode_format("-") + decode_newline(v[1])
+        bin_out += decode_newline(v[1])
+
+        bin_tmp = ""
+        sum = 0
+        c = 1
+        incomplete += 1
         continue
 
-      sum = int(bin_tmp, 2) if bin_tmp != '' else 0
-      bin_out += bin_tmp
-      hex_out += decode_format("-") + decode_newline()
-      dec_out += decode_format("-") + decode_newline()
-      bin_out += decode_newline()
+      #sum += v[0] * 2**(8-c)
+      bin_tmp += str(v[0])
 
-      bin_tmp = ""
-      sum = 0
-      c = 1
-      incomplete += 1
-      continue
+      # If we have collected enough bits to make up a byte
+      #  add it to the output (as binary, hexadecimal, and decimal)
+      if c == 8:
+        sum = int(bin_tmp.zfill(8), 2)
+        bin_out += bin_tmp + " "
+        hex_out += decode_format(sum, 2, True) + " "
+        dec_out += decode_format(sum, 3) + " "
 
-    #sum += v[0] * 2**(8-c)
-    bin_tmp += str(v[0])
+        bin_tmp = ""
+        sum = 0
+        c = 1
+      else:
+        c += 1
 
-    # If we have collected enough bits to make up a byte
-    #  add it to the output (as binary, hexadecimal, and decimal)
-    if c == 8:
-      sum = int(bin_tmp.zfill(8), 2)
+    # If the values ended before a whole byte was collected
+    #  output the incomplete binary, but skip converting to hex and decimal
+    if bin_tmp != '':
+      sum = int(bin_tmp, 2)
       bin_out += bin_tmp + " "
-      hex_out += decode_format(sum, 2, True) + " "
-      dec_out += decode_format(sum, 3) + " "
+      hex_out += decode_format("-")
+      dec_out += decode_format("-")
+      incomplete += 1
 
-      bin_tmp = ""
-      sum = 0
-      c = 1
-    else:
-      c += 1
-
-  # If the values ended before a whole byte was collected
-  #  output the incomplete binary, but skip converting to hex and decimal
-  if bin_tmp != '':
-    sum = int(bin_tmp, 2)
-    bin_out += bin_tmp + " "
-    hex_out += decode_format("-")
-    dec_out += decode_format("-")
-    incomplete += 1
-
-  out = "Bin: " + bin_out + "\n" + \
-        "Hex: " + hex_out + "\n" + \
-        "Dec: " + dec_out + "\n"
+    out = "Bin:" + bin_out + "\n\n" + \
+          "Hex:" + hex_out + "\n\n" + \
+          "Dec:" + dec_out + "\n"
 
   # Output statistics
   deb("Decode Information:")
@@ -343,9 +358,11 @@ def decode():
   deb(" Tone average:", tone_total / count)
   deb(" Silence average:", silence_avg)
   deb(" Incomplete bytes:", incomplete)
-  deb("")
 
-  output(out)
+  if out != "":
+    deb("")
+
+    output(out)
 
 
 # - - - - - MAIN - - - - - - -

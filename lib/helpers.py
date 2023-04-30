@@ -17,8 +17,14 @@ def decode_format(out, zfill=0, hex=False):
     return out.zfill(zfill)
   else:
     return str(out)
-def decode_newline():
-  return "\n     " if settings['format_output'] else " "
+def decode_newline(time = None):
+  if settings['format_output']:
+    if settings['output_timestamps'] and time != None:
+      return "\n " + str(time).ljust(settings['time_pad'] + 2)
+    else:
+      return "\n".ljust(settings['time_pad'] + 2)
+  else:
+    return " "
 
 def output(str):
   if settings['output_to_file']:

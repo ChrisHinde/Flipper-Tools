@@ -20,9 +20,14 @@ settings = dict(
 
   decode_method     = 1,
 
+  output_timestamps = False,
+
   silence_avg_ratio = 1.5,
   tone_length       = 500,
   silence_length    = 1000,
+
+  total_time        = 0,
+  time_pad          = 2,
 
   debug             = False,
 )
