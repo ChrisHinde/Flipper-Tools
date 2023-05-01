@@ -7,12 +7,17 @@ from lib.config import settings
 def deb(*arg, end="\n"):
   print(*arg, end=end) if settings['debug'] else None
 
-def decode_format(out, zfill=0, hex=False):
+def decode_format(out, zfill=0, hex=False, ascii=False):
   if hex:
     out = f'{out:x}'
+  if ascii:
+    out = chr(out)
 
   if settings['format_output']:
-    return str(out).zfill(zfill).center(settings['align_width'])
+    if ascii:
+      return out.ljust(settings['align_width'])
+    else:
+      return str(out).zfill(zfill).center(settings['align_width'])
   elif hex:
     return out.zfill(zfill)
   else:

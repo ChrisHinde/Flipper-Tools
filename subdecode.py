@@ -309,6 +309,7 @@ def decode():
     bin_out = decode_newline(values[0][1])
     hex_out = decode_newline(values[0][1])
     dec_out = decode_newline(values[0][1])
+    chr_out = decode_newline(values[0][1])
     sum = 0
 
     # Output the decoded signals in a human-friendly format
@@ -319,9 +320,10 @@ def decode():
 
         sum = int(bin_tmp, 2) if bin_tmp != '' else 0
         bin_out += bin_tmp
+        bin_out += decode_newline(v[1])
         hex_out += decode_format("-") + decode_newline(v[1])
         dec_out += decode_format("-") + decode_newline(v[1])
-        bin_out += decode_newline(v[1])
+        chr_out += decode_format("-") + decode_newline(v[1])
 
         bin_tmp = ""
         sum = 0
@@ -339,6 +341,7 @@ def decode():
         bin_out += bin_tmp + " "
         hex_out += decode_format(sum, 2, True) + " "
         dec_out += decode_format(sum, 3) + " "
+        chr_out += decode_format(sum, 0, False, True) + " "
 
         bin_tmp = ""
         sum = 0
@@ -353,11 +356,13 @@ def decode():
       bin_out += bin_tmp + " "
       hex_out += decode_format("-")
       dec_out += decode_format("-")
+      chr_out += decode_format("-")
       incomplete += 1
 
-    out = ("Bin:" + bin_out.rstrip() + "\n\n" if 'b' in settings['output_flags'] else "") + \
-          ("Hex:" + hex_out.rstrip() + "\n\n" if 'h' in settings['output_flags'] else "") + \
-          ("Dec:" + dec_out.rstrip() + "\n"   if 'd' in settings['output_flags'] else "")
+    out = ("Bin:"   + bin_out.rstrip() + "\n\n" if 'b' in settings['output_flags'] else "") + \
+          ("Hex:"   + hex_out.rstrip() + "\n\n" if 'h' in settings['output_flags'] else "") + \
+          ("Dec:"   + dec_out.rstrip() + "\n\n" if 'd' in settings['output_flags'] else "") + \
+          ("Ascii:" + chr_out.rstrip() + "\n"   if 'a' in settings['output_flags'] else "")
 
   # Output statistics
   deb("Decode Information:")
