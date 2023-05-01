@@ -49,8 +49,9 @@ def printHelp():
   "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
   "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n\n"
 
-  "  -x=Y,    --output-conv=Y\tConvert the values to 'Y': binary (b), hexadecimal (h) and/or decimal/numeric (d)\n"
+  "  -x=*,    --output-conv=*\tConvert the values to '*': binary (b), hexadecimal (h) and/or decimal/numeric (d)\n"
   "    \t\t\t\t Default: bhd\n"
+  "  -w=X,    --word-size=X\t\tUse X as the \"word size\"\n"
   "  -f,      --no-format\t\tDont't format the decoded output\n"
   "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the (formated) decoded output\n"
   "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n\n"
@@ -81,6 +82,8 @@ def readArgs():
         settings['stop_limit'] = int(arg.split("=")[1])
       elif arg.startswith('-d=') or arg.startswith('--decode-method='):
         settings['decode_method'] = int(arg.split("=")[1])
+      elif arg.startswith('-w=') or arg.startswith('--word-size='):
+        settings['word_size'] = int(arg.split("=")[1])
       elif arg.startswith('-x=') or arg.startswith('--output-conv='):
         settings['output_flags'] = arg.split("=")[1].lower()
       elif arg == '-f' or arg == '--no-format':
@@ -340,8 +343,8 @@ def decode():
 
       # If we have collected enough bits to make up a byte
       #  add it to the output (as binary, hexadecimal, and decimal)
-      if c == 8:
-        sum = int(bin_tmp.zfill(8), 2)
+      if c == settings['word_size']:
+        sum = int(bin_tmp.zfill(settings['word_size']), 2)
         bin_out += bin_tmp + " "
         hex_out += decode_format(sum, 2, True) + " "
         dec_out += decode_format(sum, 3) + " "

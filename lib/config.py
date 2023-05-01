@@ -23,6 +23,7 @@ settings = dict(
   output_timestamps = False,
   output_flags      = 'bhd',
   align_width       = 8,
+  word_size         = 8, # At what length to break up "bytes"
 
   silence_avg_ratio = 1.5,
   tone_length       = 500,
