@@ -159,6 +159,9 @@ def readFile():
             longest_silence['silence'] = silence
 
           signals.append((tone, silence))
+      else:
+        l = line.split(':')
+        settings['file_info'][l[0]] = l[1].strip()
 
   if len(signals) == 0:
     print("No RAW data found! Exiting!")
@@ -300,6 +303,7 @@ def decode():
   else:
     print("Unknown decode method:", settings['decode_method'])
 
+  # Output the results (if there are any)
   if len(values) == 0:
     print("No values to output!")
     deb("")
@@ -390,7 +394,11 @@ deb("DEBUG MODE ENABLED!\n")
 readFile()
 
 deb("")
-deb("Ingest information:")
+deb("File information:")
+for fi in settings['file_info']:
+  deb(" " + fi + ":", settings['file_info'][fi])
+
+deb("\nIngest information:")
 deb(" Total signal pairs:", len(signals))
 deb(" Shortest tone:", shortest_tone)
 deb(" Longest tone:", longest_tone)

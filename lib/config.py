@@ -30,6 +30,7 @@ settings = dict(
 
   total_time        = 0,
   time_pad          = 2,
+  file_info         = dict(),
 
   debug             = False,
 )
