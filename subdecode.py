@@ -303,12 +303,7 @@ def decode():
   out = ""
 
   # Run the signals through the selected decoding
-  if settings['decode_method'] == 0:
-    values = decoder_0(sigs, silence_avg)
-  elif settings['decode_method'] == 1:
-    values = decoder_1(sigs, silence_avg)
-  else:
-    print("Unknown decode method:", settings['decode_method'])
+  values = run_decoder(sigs, silence_avg)
 
   # Output the results (if there are any)
   if len(values) == 0:

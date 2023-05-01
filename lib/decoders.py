@@ -41,3 +41,12 @@ def decoder_1(sigs, silence_avg):
     time += silence
 
   return values
+
+def run_decoder(sigs, silence_avg):
+  if settings['decode_method'] == 0:
+    return decoder_0(sigs, silence_avg)
+  elif settings['decode_method'] == 1:
+    return decoder_1(sigs, silence_avg)
+
+  print("Unknown decode method:", settings['decode_method'])
+  return []
