@@ -16,12 +16,15 @@ settings = dict(
   start_limit       = -1,
   stop_limit        = -1,
 
+  csv_delimiter     = ",",
+
   format_output     = True,
 
   decode_method     = 1,
 
   output_timestamps = False,
   output_flags      = 'bhd',
+
   align_width       = 8,
   word_size         = 8, # At what length to break up "bytes"
 

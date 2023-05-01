@@ -47,11 +47,13 @@ def printHelp():
   "  -c,      --csv\t\tExport the data as CSV (Comma seperated values), don't decode\n"
   "  -ct,     --csv-time\t\tExport the data as CSV (Comma seperated values), but with \"running time\"\n"
   "  -cs,     --csv-add-end\tAdd an \"end point\" to the previous data point just before the next point\n"
-  "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n\n"
+  "    \t\t\t\t This helps when plotting the CSV data in a spreadsheet editor\n"
+  "  -cd=X,   --csv-delimiter=X\tSet a custom delimiter for CSV export, Default: ,\n"
+  "    \t\t\t\t Tip: You can set it to newline with -cd=\"\\n\" or -cd=\\\\n\n\n"
 
   "  -x=*,    --output-conv=*\tConvert the values to '*': binary (b), hexadecimal (h) and/or decimal/numeric (d)\n"
   "    \t\t\t\t Default: bhd\n"
-  "  -w=X,    --word-size=X\t\tUse X as the \"word size\"\n"
+  "  -w=X,    --word-size=X\tUse X as the \"word size\"\n"
   "  -f,      --no-format\t\tDont't format the decoded output\n"
   "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the (formated) decoded output\n"
   "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n\n"
@@ -86,6 +88,8 @@ def readArgs():
         settings['word_size'] = int(arg.split("=")[1])
       elif arg.startswith('-x=') or arg.startswith('--output-conv='):
         settings['output_flags'] = arg.split("=")[1].lower()
+      elif arg.startswith('-cd=') or arg.startswith('--csv-delimiter='):
+        settings['csv_delimiter'] = arg.split("=")[1].replace("\\n", "\n")
       elif arg == '-f' or arg == '--no-format':
         settings['format_output'] = False
       elif arg == '-t' or arg == '--output-timestamps':
@@ -183,7 +187,7 @@ def outputCSV():
       total_time += abs(s[1])
       continue
 
-    csv += str(s[0]) + "," + str(s[1]) + "\n"
+    csv += str(s[0]) + settings['csv_delimiter'] + str(s[1]) + "\n"
 
     total_time += abs(s[1])
 
@@ -213,8 +217,8 @@ def outputTimedCSV():
       continue
 
     if settings['add_time_end']:
-      csv += str(total_time - 1) + ",1\n"
-    csv += str(total_time) + ",0\n"
+      csv += str(total_time - 1) + settings['csv_delimiter'] + "1\n"
+    csv += str(total_time) + settings['csv_delimiter'] + "0\n"
 
     total_signals += 1
 
@@ -224,8 +228,8 @@ def outputTimedCSV():
 
     total_time += abs(s[1])
     if settings['add_time_end']:
-      csv += str(total_time - 1) + ",0\n"
-    csv += str(total_time) + ",1\n"
+      csv += str(total_time - 1) + settings['csv_delimiter'] + "0\n"
+    csv += str(total_time) + settings['csv_delimiter'] + "1\n"
     
     total_signals += 1
 
