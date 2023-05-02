@@ -251,6 +251,7 @@ def decode():
   count         = 0
   sigs          = []
   values        = []
+  first_after_limit = False
 
   sh_tone = dict(tone = 10000000, silence = 0)
   lon_tone = dict(tone = 0, silence = 0)
@@ -267,7 +268,11 @@ def decode():
 
     if total_time < settings['start_limit']:
       total_time += silence
+      first_after_limit = True
       continue
+    elif first_after_limit:
+      settings['start_limit'] = total_time - tone
+      first_after_limit = False
 
     total_time += silence
 

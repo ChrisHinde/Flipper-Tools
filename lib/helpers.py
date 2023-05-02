@@ -40,6 +40,7 @@ def decode_format(out, type=''):
 def decode_newline(time = None):
   if settings['format_output']:
     if settings['output_timestamps'] and time != None:
+      time += settings['start_limit'] if settings['start_limit'] != -1 else 0
       return "\n " + str(time).ljust(settings['time_pad'] + 2)
     else:
       return "\n".ljust(settings['time_pad'] + 2)
