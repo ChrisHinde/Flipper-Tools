@@ -24,6 +24,7 @@ settings = dict(
 
   output_timestamps = False,
   output_flags      = 'bhd',
+  output_color      = True,
 
   align_width       = 8,
   word_size         = 8, # At what length to break up "bytes"

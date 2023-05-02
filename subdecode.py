@@ -23,7 +23,7 @@ if sys.version_info.major < 3:
 
 signals = []
 
-from lib.config import settings
+from config import settings
 from lib.decoders import *
 from lib.helpers import *
 
@@ -92,10 +92,13 @@ def readArgs():
         settings['csv_delimiter'] = arg.split("=")[1].replace("\\n", "\n")
       elif arg == '-f' or arg == '--no-format':
         settings['format_output'] = False
+      elif arg == '-nc' or arg == '--no-color':
+        settings['output_color'] = False
       elif arg == '-t' or arg == '--output-timestamps':
         settings['output_timestamps'] = True
       elif arg == '-o' or arg == '--output':
         settings['output_to_file'] = True
+        settings['output_color']   = False  # Turn of coloring of the output when exporting to file
         is_output_file = True
       elif arg == '-D' or arg == '--debug':
         settings['debug'] = True
@@ -370,10 +373,10 @@ def decode():
       chr_out += decode_format("-", 'a')
       incomplete += 1
 
-    out = ("Bin:"   + bin_out.rstrip() + "\n\n" if 'b' in settings['output_flags'] else "") + \
-          ("Hex:"   + hex_out.rstrip() + "\n\n" if 'h' in settings['output_flags'] else "") + \
-          ("Dec:"   + dec_out.rstrip() + "\n\n" if 'd' in settings['output_flags'] else "") + \
-          ("Ascii:" + chr_out.rstrip() + "\n"   if 'a' in settings['output_flags'] else "")
+    out = (c_lbl("Bin:")   + bin_out.rstrip() + "\n\n" if 'b' in settings['output_flags'] else "") + \
+          (c_lbl("Hex:")   + hex_out.rstrip() + "\n\n" if 'h' in settings['output_flags'] else "") + \
+          (c_lbl("Dec:")   + dec_out.rstrip() + "\n\n" if 'd' in settings['output_flags'] else "") + \
+          (c_lbl("Ascii:") + chr_out.rstrip() + "\n"   if 'a' in settings['output_flags'] else "")
 
   # Output statistics
   deb("Decode Information:")

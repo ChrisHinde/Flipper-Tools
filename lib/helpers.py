@@ -2,13 +2,36 @@ if __name__ == '__main__':
   print("This isn't a runnable script! Please run ´subdecode.py´ instead!")
   exit(1)
 
-from lib.config import settings
+from config import settings
+
+def c_wrap(str, color):
+  pre = ""
+  suf = ""
+
+  if settings['output_color']:
+    pre = "\033[" + color + "m"
+    suf = "\033[0m"
+
+  return pre + str + suf
+
+def c_lbl(str):
+  return c_wrap(str, '0;32')
+def c_ts(str):
+  return c_wrap(str, '0;36')
+def c_d(str, blank = False):
+  col = '1;37' if not blank else '0;31'
+  return c_wrap(str, col)
+def c_d_s():
+  return c_wrap(str, '0;31')
+def c_d_e():
+  return c_wrap(str, '0;30')
 
 def deb(*arg, end="\n"):
   print(*arg, end=end) if settings['debug'] else None
 
 def decode_format(out, type=''):
   zfill = 0
+  blank = out == '-'
 
   if type == 'h':
     out = f'{out:x}' if out != '-' else '-'
@@ -18,30 +41,32 @@ def decode_format(out, type=''):
     if settings['format_output']:
       if settings['word_size'] <= 4:
         out = str(out).rjust(2)
-      elif out != '-':
+      elif not blank:
         out = str(out).rjust(3)
     zfill = 0
   if type == 'a':
-    if out == '-':
-      out = " "
+    if blank:
+      out = "-"
     else:
       out = chr(out)
 
   if settings['format_output']:
     if type == 'a':
-      return out.ljust(settings['align_width'])
+      out = out.ljust(settings['align_width'])
     else:
-      return str(out).zfill(zfill).center(settings['align_width'])
+      out = str(out).zfill(zfill).center(settings['align_width'])
   elif type == 'h':
-    return out.zfill(zfill)
+    out = out.zfill(zfill)
   else:
-    return str(out)
+    out = str(out)
+
+  return c_d(out, blank)
 
 def decode_newline(time = None):
   if settings['format_output']:
     if settings['output_timestamps'] and time != None:
       time += settings['start_limit'] if settings['start_limit'] != -1 else 0
-      return "\n " + str(time).ljust(settings['time_pad'] + 2)
+      return "\n " + c_ts(str(time).ljust(settings['time_pad'] + 2))
     else:
       return "\n".ljust(settings['time_pad'] + 2)
   else:
