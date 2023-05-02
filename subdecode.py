@@ -7,8 +7,8 @@
 # Licensed under MIT License (see LICENSE file for more information)
 #
 #  Usage : ./subdecode.py input.sub [> output]
-VERSION      =    'v0.4a'
-VERSION_DATE =    '230430'
+VERSION      =    'v0.5a'
+VERSION_DATE =    '230502'
 
 import os
 import re
@@ -51,9 +51,10 @@ def printHelp():
   "  -cd=X,   --csv-delimiter=X\tSet a custom delimiter for CSV export, Default: ,\n"
   "    \t\t\t\t Tip: You can set it to newline with -cd=\"\\n\" or -cd=\\\\n\n\n"
 
-  "  -x=*,    --output-conv=*\tConvert the values to '*': binary (b), hexadecimal (h) and/or decimal/numeric (d)\n"
+  "  -x=*,    --output-conv=*\tConvert the values to '*': binary (b), hexadecimal (h), decimal/numeric (d) and/or ascii (a)\n"
   "    \t\t\t\t Default: bhd\n"
-  "  -w=X,    --word-size=X\tUse X as the \"word size\"\n"
+  "  -w=X,    --word-size=X\tUse X as the \"word size\", Default: 8 (bits = 1 byte)\n"
+  "  -nc,     --no-color\t\tDon't add color to the output (color is automatically turned off for file output)\n"
   "  -f,      --no-format\t\tDont't format the decoded output\n"
   "  -t,      --output-timestamps\tAdd timestamps (at \"breaks\") to the (formated) decoded output\n"
   "    \t\t\t\t This can help with selecting which part you want to limit the processing to\n\n"
